@@ -1,0 +1,4 @@
+الموقع الرئيسي: http://localhost:8080/My-Order-main/
+لوحة الإدارة: http://localhost:8080/My-Order-main/admin/
+صفحة تسجيل الدخول للإدارة: http://localhost:8080/My-Order-main/admin/login.php
+لوحة التحكم للإدارة: http://localhost:8080/My-Order-main/admin/dashboard.ph
