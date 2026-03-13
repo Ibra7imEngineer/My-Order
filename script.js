@@ -618,7 +618,7 @@
       html += `
             <div class="cart-item" style="background:white; border:1px solid #E8EAED; border-radius:12px; padding:20px; margin-bottom:15px; display:flex; gap:15px; align-items:center; transition:all 0.3s;">
                 <div style="flex-shrink:0;">
-                    <img src="${item.image || item.img}" alt="${item.name}" style="width:100px; height:100px; object-fit:cover; border-radius:8px;">
+                    <img class="interactive-img" src="${item.image || item.img}" alt="${item.name}" data-fullsrc="${item.image || item.img}" data-caption="${item.name.replace(/'/g, "\\'")}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; cursor:pointer;">
                 </div>
                 <div style="flex-grow:1;">
                     <h4 style="margin:0 0 8px 0; color:#2C3E50; font-size:16px; font-weight:700;">${item.name}</h4>
@@ -2183,7 +2183,7 @@
     showPage("cart-page");
   }
 
-  // إعادة إرسال الطلب للمطعم
+  // إعادة إرسال الطلب للمطعم (تضيف الطلب للسلة أولاً ثم تذهب إليها)
   function resendOrderToRestaurant(orderId) {
     // جلب الطلبات من السجل المركزي
     const orders =
@@ -2195,56 +2195,26 @@
       return;
     }
 
-    // إعادة بناء رسالة المطعم
-    let itemsSummary = "";
-    order.items.forEach((item, index) => {
-      const quantity = item.quantity || 1;
-      const itemTotal = item.price * quantity;
-      itemsSummary += `\n${index + 1}️⃣ ${item.name} × ${quantity} = *${itemTotal} ج.م*`;
+    // إضافة عناصر الطلب إلى السلة (كما في إعادة الطلب)
+    order.items.forEach((item) => {
+      const existingItem = cart.find((i) => i.id === item.id);
+      if (existingItem) {
+        existingItem.quantity =
+          (existingItem.quantity || 1) + (item.quantity || 1);
+      } else {
+        cart.push({ ...item, quantity: item.quantity || 1 });
+      }
     });
 
-    const timestamp = new Date(order.timestamp).toLocaleString("ar-EG");
-    let restaurantMessage = `*🛍️ 📝 إعادة طلب سابق من My Order*\n`;
-    restaurantMessage += `*رقم الطلب الأصلي: #${orderId}*\n`;
-    restaurantMessage += `${"═".repeat(40)}\n`;
-    restaurantMessage += `*👤 اسم العميل:* ${order.customerName}\n`;
-    restaurantMessage += `*📱 رقم العميل:* ${order.customerPhone}\n`;
-    restaurantMessage += `*📍 عنوان التوصيل:* ${order.customerAddress}\n`;
-    restaurantMessage += `*📅 الطلب الأصلي:* ${timestamp}\n`;
-    restaurantMessage += `${"═".repeat(40)}\n`;
-    restaurantMessage += `*🍽️ تفاصيل الطلب:*${itemsSummary}\n`;
-    restaurantMessage += `${"═".repeat(40)}\n`;
-    restaurantMessage += `*💰 الإجمالي:* *${order.total} ج.م*\n`;
-    restaurantMessage += `${"═".repeat(40)}\n`;
-    restaurantMessage += `⚠️ هذا طلب متكرر - العميل يريد نفس الطلب\n`;
-    restaurantMessage += `📌 برجاء تحضير الطلب بسرعة`;
+    updateCartCount();
+    renderCartItems();
 
-    // إرسال الرسالة
-    console.log("📲 إرسال الطلب المتكرر للمطعم...");
-    const restaurantEncoded = encodeURIComponent(restaurantMessage);
-    const whatsappUrl = `https://wa.me/${RESTAURANT_PHONE}?text=${restaurantEncoded}`;
-
-    console.log("🌐 رابط WhatsApp:", whatsappUrl);
-    console.log("📱 رقم المطعم:", RESTAURANT_PHONE);
-
-    const whatsappWindow = window.open(
-      whatsappUrl,
-      "_blank",
-      "noopener,noreferrer",
+    // نوجه المستخدم إلى صفحة السلة ليتمكن من مراجعة الطلب ثم الإرسال
+    showPage("cart-page");
+    showNotification(
+      "✅ تمت إضافة الطلب للسلة. يمكنك مراجعته ثم إرساله للمطعم عبر زر الإرسال.",
+      "success",
     );
-
-    if (
-      !whatsappWindow ||
-      whatsappWindow.closed ||
-      typeof whatsappWindow.closed === "undefined"
-    ) {
-      console.warn("⚠️ فتح النافذة فشل - محاولة إعادة التوجيه");
-      setTimeout(() => {
-        window.location.href = whatsappUrl;
-      }, 1000);
-    }
-
-    showNotification("✅ تم إعادة إرسال الطلب للمطعم", "success");
   }
 
   function renderAdminList() {
