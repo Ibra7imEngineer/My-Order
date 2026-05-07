@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Insights Test</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #121212; color: white; }
+        button { padding: 10px 20px; background: #ff8c00; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #333; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Advanced Insights Test</h1>
+    <button onclick="testDataProcessing()">Test Data Processing</button>
+    <button onclick="openAdvancedInsights()">Open رؤية تحليلية متقدمة Modal</button>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script src="assets/js/advanced-insights.js"></script>
+    <script>
+        function testDataProcessing() {
+            const results = document.getElementById('testResults');
+
+            // Sample data
+            const sampleOrders = [
+                {
+                    order_id: 1,
+                    customer_name: "Test Customer 1",
+                    address: "سيدي سالم كفرالشيخ",
+                    created_at: "2024-01-06T10:30:00",
+                    items: ["برجر كنج كلاسيك", "بيتزا مارغريتا"],
+                },
+                {
+                    order_id: 2,
+                    customer_name: "Test Customer 2",
+                    address: "التفتيش",
+                    created_at: "2024-01-06T14:15:00",
+                    items: ["برجر دبل تشيز", "سباجيتي بولونيز"],
+                },
+            ];
+
+            try {
+                const dailyTraffic = processDailyTrafficData(sampleOrders);
+                const regionalSales = processRegionalSalesData(sampleOrders);
+                const marketBasket = processMarketBasketData(sampleOrders);
+
+                results.innerHTML = `
+                    <h3>✅ Data Processing Test Passed</h3>
+                    <p><strong>Daily Traffic:</strong> ${JSON.stringify(dailyTraffic)}</p>
+                    <p><strong>Regional Sales:</strong> ${JSON.stringify(regionalSales)}</p>
+                    <p><strong>Market Basket:</strong> ${JSON.stringify(marketBasket)}</p>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <h3>❌ Data Processing Test Failed</h3>
+                    <p>Error: ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">c:\xampp\htdocs\My-Order\test_advanced_insights.html
